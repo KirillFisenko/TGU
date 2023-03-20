@@ -4,6 +4,9 @@ namespace TGU_lesson1
 {
     public class Matrix
     {
+        // Поле генерации случайных чисел
+        public static Random random = new Random();
+
         // Поле для хранения данных матрицы
         public int[,] data;
 
@@ -97,7 +100,7 @@ namespace TGU_lesson1
             return result;
         }
 
-        // Метод создания новой матрицы с заданными размерами и заполненой нулями
+        // Метод создания новой матрицы с заданными размерами и заполненой нулями, на мой вгляд он здесь лишний
         public static Matrix GetEmpty(int rows, int columns)
         {
             Matrix result = new Matrix(rows, columns);
@@ -111,6 +114,21 @@ namespace TGU_lesson1
             }
             return result;
         }
+
+        // Метод создания новой матрицы матрицы со случайными числами от 0 до 9
+        public static Matrix GetMatrixRandomNumbers(int rows, int columns)
+        {            
+            Matrix result = new Matrix(rows, columns);            
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < columns; j++)
+                {                    
+                    result[i, j] = random.Next(10);
+                }
+            }
+            return result;
+        }             
 
         // Метод для вывода на консоль матрицы
         public void Print()
@@ -160,45 +178,27 @@ namespace TGU_lesson1
         }
     }
 
-
     public class Program
     {
         static void Main(string[] args)
         {
-            // Создаем две матрицы разных размеров и заполняем их случайными числами от 0 до 9
-            Matrix matrix1 = new Matrix(3, 3);
-            Matrix matrix2 = new Matrix(4, 4);
+            // Создаем матрицы и заполняем их
+            Matrix matrix1 = Matrix.GetMatrixRandomNumbers(4, 4);            
+            Matrix matrix2 = Matrix.GetMatrixRandomNumbers(5, 6);                                 
 
-            Random random = new Random();
-
-            for (int i = 0; i < matrix1.Rows; i++)
-            {
-                for (int j = 0; j < matrix1.Columns; j++)
-                {
-                    matrix1[i, j] = random.Next(10);
-                }
-            }
-
-            for (int i = 0; i < matrix2.Rows; i++)
-            {
-                for (int j = 0; j < matrix2.Columns; j++)
-                {
-                    matrix2[i, j] = random.Next(10);
-                }
-            }
+            // Выводим матрицы на консоль
+            Console.WriteLine("Матрица 1:");
+            matrix1.Print();
+            Console.WriteLine("Матрица 2:");
+            matrix2.Print();
+            Console.WriteLine("Матрица 3:");            
 
             try
-            {   // Выводим матрицы на консоль
-                Console.WriteLine("Матрица a:");
-                matrix1.Print();
-
-                Console.WriteLine("Матрица b:");
-                matrix2.Print();
-
+            {   
                 // Пытаемся сложить матрицы и вывести результат на консоль
-                Console.WriteLine("Матрица a + b:");
-                Matrix result = Matrix.Add(matrix1, matrix2);
-                result.Print();
+                Console.WriteLine("Матрица 1 + Матрица 2:");
+                Matrix resultAdd = Matrix.Add(matrix1, matrix2);
+                resultAdd.Print();
             }
             catch (MatrixException e) // Перехватываем исключение при работе с матрицами
             {
@@ -207,12 +207,45 @@ namespace TGU_lesson1
                 Console.WriteLine($"Размер первой матрицы: {e.Rows1} x {e.Columns1}");
                 Console.WriteLine($"Размер второй матрицы: {e.Rows2} x {e.Columns2}");
             }
+            Console.WriteLine();
+            
+            try
+            {
+                // Пытаемся вычесть матрицы и вывести результат на консоль
+                Console.WriteLine("Матрица 1 - Матрица 2:");
+                Matrix resultSubtract = Matrix.Subtract(matrix1, matrix2);
+                resultSubtract.Print();
+            }
+            catch (MatrixException e) // Перехватываем исключение при работе с матрицами
+            {
+                // Выводим сообщение об ошибке и размеры матриц
+                Console.WriteLine(e.Message);
+                Console.WriteLine($"Размер первой матрицы: {e.Rows1} x {e.Columns1}");
+                Console.WriteLine($"Размер второй матрицы: {e.Rows2} x {e.Columns2}");
+            }
+            Console.WriteLine();
+            
+            try
+            {
+                // Пытаемся умножить матрицы и вывести результат на консоль
+                Console.WriteLine("Матрица 1 * Матрица 2:");
+                Matrix resultMultiply = Matrix.Multiply(matrix1, matrix2);
+                resultMultiply.Print();
+            }
+            catch (MatrixException e) // Перехватываем исключение при работе с матрицами
+            {
+                // Выводим сообщение об ошибке и размеры матриц
+                Console.WriteLine(e.Message);
+                Console.WriteLine($"Размер первой матрицы: {e.Rows1} x {e.Columns1}");
+                Console.WriteLine($"Размер второй матрицы: {e.Rows2} x {e.Columns2}");
+            }
+            
             finally // Выполняем блок независимо от наличия исключения
             {
                 // Освобождаем ресурсы, занятые матрицами
                 matrix1 = null;
-                matrix2 = null;
-
+                matrix2 = null;               
+                Console.WriteLine();
                 // Выводим сообщение о завершении работы программы
                 Console.WriteLine("Программа завершила работу.");
             }
