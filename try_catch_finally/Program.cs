@@ -190,8 +190,7 @@ namespace TGU_lesson1
             Console.WriteLine("Матрица 1:");
             matrix1.Print();
             Console.WriteLine("Матрица 2:");
-            matrix2.Print();
-            Console.WriteLine("Матрица 3:");            
+            matrix2.Print();                      
 
             try
             {   
@@ -245,8 +244,7 @@ namespace TGU_lesson1
                 // Освобождаем ресурсы, занятые матрицами
                 matrix1 = null;
                 matrix2 = null;               
-                Console.WriteLine();
-                // Выводим сообщение о завершении работы программы
+                Console.WriteLine();                
                 Console.WriteLine("Программа завершила работу.");
             }
             Console.ReadLine();
