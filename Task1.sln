@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TGU_lesson1", "try_catch_finally\TGU_lesson1.csproj", "{66D10084-75A1-46F3-A3F6-9B1FF1EC36A7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "try_catch_finally", "try_catch_finally\try_catch_finally.csproj", "{66D10084-75A1-46F3-A3F6-9B1FF1EC36A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
