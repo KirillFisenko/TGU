@@ -117,18 +117,18 @@ namespace TGU_lesson1
 
         // Метод создания новой матрицы матрицы со случайными числами от 0 до 9
         public static Matrix GetMatrixRandomNumbers(int rows, int columns)
-        {            
-            Matrix result = new Matrix(rows, columns);            
+        {
+            Matrix result = new Matrix(rows, columns);
 
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < columns; j++)
-                {                    
+                {
                     result[i, j] = random.Next(10);
                 }
             }
             return result;
-        }             
+        }
 
         // Метод для вывода на консоль матрицы
         public void Print()
@@ -143,7 +143,7 @@ namespace TGU_lesson1
             }
             Console.WriteLine();
         }
-    }    
+    }
 
     // Создание нового класса исключения, который будет наследоваться от базового класса
     public class MatrixException : Exception
@@ -183,17 +183,17 @@ namespace TGU_lesson1
         static void Main(string[] args)
         {
             // Создаем матрицы и заполняем их
-            Matrix matrix1 = Matrix.GetMatrixRandomNumbers(4, 4);            
-            Matrix matrix2 = Matrix.GetMatrixRandomNumbers(4, 4);                                 
+            Matrix matrix1 = Matrix.GetMatrixRandomNumbers(4, 4);
+            Matrix matrix2 = Matrix.GetMatrixRandomNumbers(4, 4);
 
             // Выводим матрицы на консоль
             Console.WriteLine("Матрица 1:");
             matrix1.Print();
             Console.WriteLine("Матрица 2:");
-            matrix2.Print();                      
+            matrix2.Print();
 
             try
-            {   
+            {
                 // Пытаемся сложить матрицы и вывести результат на консоль
                 Console.WriteLine("Матрица 1 + Матрица 2:");
                 Matrix resultAdd = Matrix.Add(matrix1, matrix2);
@@ -207,7 +207,7 @@ namespace TGU_lesson1
                 Console.WriteLine($"Размер второй матрицы: {e.Rows2} x {e.Columns2}");
             }
             Console.WriteLine();
-            
+
             try
             {
                 // Пытаемся вычесть матрицы и вывести результат на консоль
@@ -223,7 +223,7 @@ namespace TGU_lesson1
                 Console.WriteLine($"Размер второй матрицы: {e.Rows2} x {e.Columns2}");
             }
             Console.WriteLine();
-            
+
             try
             {
                 // Пытаемся умножить матрицы и вывести результат на консоль
@@ -238,13 +238,13 @@ namespace TGU_lesson1
                 Console.WriteLine($"Размер первой матрицы: {e.Rows1} x {e.Columns1}");
                 Console.WriteLine($"Размер второй матрицы: {e.Rows2} x {e.Columns2}");
             }
-            
+
             finally // Выполняем блок независимо от наличия исключения
             {
                 // Освобождаем ресурсы, занятые матрицами
                 matrix1 = null;
-                matrix2 = null;               
-                Console.WriteLine();                
+                matrix2 = null;
+                Console.WriteLine();
                 Console.WriteLine("Программа завершила работу.");
             }
             Console.ReadLine();
