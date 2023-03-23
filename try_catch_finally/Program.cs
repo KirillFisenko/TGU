@@ -184,7 +184,7 @@ namespace TGU_lesson1
         {
             // Создаем матрицы и заполняем их
             Matrix matrix1 = Matrix.GetMatrixRandomNumbers(4, 4);            
-            Matrix matrix2 = Matrix.GetMatrixRandomNumbers(5, 6);                                 
+            Matrix matrix2 = Matrix.GetMatrixRandomNumbers(4, 4);                                 
 
             // Выводим матрицы на консоль
             Console.WriteLine("Матрица 1:");
