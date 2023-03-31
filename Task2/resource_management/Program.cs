@@ -84,7 +84,7 @@ internal class Program
             textFile[13] = 'и';
             textFile[14] = 'р';
 
-            Console.WriteLine("Содержимое файла после записи:");
+            Console.WriteLine("Содержимое файла1 после записи:");
             for (int i = 0; i < textFile.Length; i++)
             {
                 Console.Write(textFile[i]);
@@ -98,15 +98,15 @@ internal class Program
             textFile?.Dispose();
         }
 
-        using (TextFile textFile2 = TextFile.Create("test.txt", 15))
-        {
+        using (StreamWriter sw = new StreamWriter("test.txt", true, System.Text.Encoding.Default))              
+        {            
             // Изменение содержимого файла
-            textFile2[1] = '2';
+            textFile[1] = '2';
 
-            Console.WriteLine("Содержимое файла после изменения:");
-            for (int i = 0; i < textFile2.Length; i++)
+            Console.WriteLine("Содержимое файла2 после изменения:");
+            for (int i = 0; i < textFile.Length; i++)
             {
-                Console.Write(textFile2[i]);
+                Console.Write(textFile[i]);
             }
             Console.WriteLine();
         }
