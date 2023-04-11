@@ -3,12 +3,12 @@ using System.IO;
 
 public class TextFile : IDisposable
 {
-    private FileStream fileStream;
-    private StreamReader streamReader;
-    private StreamWriter streamWriter;
+    public FileStream fileStream;
+    public StreamReader streamReader;
+    public StreamWriter streamWriter;
 
     // Конструктор класса TextFile
-    private TextFile(string path, int length)
+    public TextFile(string path, int length)
     {
         fileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
         streamReader = new StreamReader(fileStream);
@@ -53,13 +53,13 @@ public class TextFile : IDisposable
     // Метод Dispose класса TextFile
     public void Dispose()
     {
-        streamReader.Close();
         streamWriter.Close();
+        streamReader.Close();        
         fileStream.Close();
     }
 }
 
-internal class Program
+public class Program
 {
     static void Main(string[] args)
     {
@@ -84,7 +84,7 @@ internal class Program
             textFile[13] = 'и';
             textFile[14] = 'р';
 
-            Console.WriteLine("Содержимое файла1 после записи:");
+            Console.WriteLine("Содержимое файла после записи:");
             for (int i = 0; i < textFile.Length; i++)
             {
                 Console.Write(textFile[i]);
@@ -95,18 +95,19 @@ internal class Program
         {
             // Освобождение ресурсов
             Console.WriteLine("Освобождение ресурсов...");
+            
             textFile?.Dispose();
         }
 
-        using (StreamWriter sw = new StreamWriter("test.txt", true, System.Text.Encoding.Default))              
-        {            
+        using (TextFile sw = new TextFile("test.txt", 15))
+        {
             // Изменение содержимого файла
-            textFile[1] = '2';
+            sw[1] = '2';
 
-            Console.WriteLine("Содержимое файла2 после изменения:");
-            for (int i = 0; i < textFile.Length; i++)
+            Console.WriteLine("Содержимое файла после изменения:");
+            for (int i = 0; i < sw.Length; i++)
             {
-                Console.Write(textFile[i]);
+                Console.Write(sw[i]);
             }
             Console.WriteLine();
         }
