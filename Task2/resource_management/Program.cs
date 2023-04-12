@@ -22,7 +22,7 @@ class MyFile : IDisposable
     // Метод Create создает новый файл с заданным именем и длиной, заполняя его пробелами.
     public static MyFile Create(string path, int length, Encoding encoding)
     {
-        var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+        var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
         var writer = new StreamWriter(stream, encoding);
         writer.Write(new string(' ', length));
         writer.Flush();
@@ -32,7 +32,7 @@ class MyFile : IDisposable
     // Метод Read открывает существующий файл и возвращает объект класса MyFile, содержащий его содержимое.
     public static MyFile Read(string path, Encoding encoding)
     {
-        var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+        var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
         var reader = new StreamReader(stream, encoding);
         var length = (int)stream.Length;
         return new MyFile(stream, length, encoding);
