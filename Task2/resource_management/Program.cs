@@ -2,6 +2,68 @@
 using System.IO;
 using System.Text;
 
+class MyFile : IDisposable
+{
+    private FileStream stream;
+    private StreamWriter writer;
+    private StreamReader reader;
+
+    public int Length { get; }
+
+    private MyFile(FileStream stream, int length, Encoding encoding)
+    {
+        this.stream = stream;
+        writer = new StreamWriter(this.stream, encoding);
+        reader = new StreamReader(this.stream, encoding);
+        Length = length;
+    }
+
+    public static MyFile Create(string path, int length, Encoding encoding)
+    {
+        var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+        var writer = new StreamWriter(stream, encoding);
+        writer.Write(new string(' ', length));
+        writer.Flush();
+        return new MyFile(stream, length, encoding);
+    }
+
+    public static MyFile Read(string path, Encoding encoding)
+    {
+        var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+        var reader = new StreamReader(stream, encoding);
+        var length = (int)stream.Length;
+        return new MyFile(stream, length, encoding);
+    }
+
+    public char this[int index]
+    {
+        get
+        {
+            if (index < 0 || index >= Length)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            stream.Seek(index, SeekOrigin.Begin);
+            return (char)reader.Read();
+        }
+        set
+        {
+            if (index < 0 || index >= Length)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            stream.Seek(index, SeekOrigin.Begin);
+            writer.Write(value);
+            writer.Flush();
+        }
+    }
+
+    public void Dispose()
+    {
+        writer.Dispose();
+        reader.Dispose();
+        stream.Dispose();
+    }
+}
+
 class Program
 {
     static void Main(string[] args)
@@ -37,13 +99,14 @@ class Program
                 Console.Write(file[i]);
             }
             Console.WriteLine();
+            Console.WriteLine();
 
             // Открытие созданного файла и изменение в нём одного символа, чтобы в файле получилось «[02] Привет мир!»
             using (var reader = MyFile.Read(path, encoding))
             {
                 reader[2] = '2';
 
-                Console.WriteLine("Содержимое файла после записи:");
+                Console.WriteLine("Содержимое файла после изменения:");
                 for (int i = 0; i < reader.Length; i++)
                 {
                     Console.Write(reader[i]);
@@ -58,67 +121,4 @@ class Program
         }
         Console.ReadLine();
     }
-}
-
-class MyFile : IDisposable
-{
-    private FileStream _stream;
-    private StreamWriter _writer;
-    private StreamReader _reader;
-
-    public int Length { get; }
-
-    private MyFile(FileStream stream, int length, Encoding encoding)
-    {
-        _stream = stream;
-        _writer = new StreamWriter(_stream, encoding);
-        _reader = new StreamReader(_stream, encoding);
-        Length = length;
-    }
-
-    public static MyFile Create(string path, int length, Encoding encoding)
-    {
-        var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-        var writer = new StreamWriter(stream, encoding);
-        writer.Write(new string(' ', length));
-        writer.Flush();
-        return new MyFile(stream, length, encoding);
-    }
-
-    public static MyFile Read(string path, Encoding encoding)
-    {
-        var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
-        var reader = new StreamReader(stream, encoding);
-        var length = (int)stream.Length;
-        return new MyFile(stream, length, encoding);
-    }
-
-    public char this[int index]
-    {
-        get
-        {
-            if (index < 0 || index >= Length)
-                throw new ArgumentOutOfRangeException(nameof(index));
-
-            _stream.Seek(index, SeekOrigin.Begin);
-            return (char)_reader.Read();
-        }
-        set
-        {
-            if (index < 0 || index >= Length)
-                throw new ArgumentOutOfRangeException(nameof(index));
-
-            _stream.Seek(index, SeekOrigin.Begin);
-            _writer.Write(value);
-            _writer.Flush();
-        }
-    }
-
-    public void Dispose()
-    {
-        _writer.Dispose();
-        _reader.Dispose();
-        _stream.Dispose();
-    }
-
 }
