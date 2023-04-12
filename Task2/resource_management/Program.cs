@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 
+// Класс MyFile реализует интерфейс IDisposable, что позволяет освобождать ресурсы, занимаемые объектом класса, после его использования.
 class MyFile : IDisposable
 {
     private FileStream stream;
@@ -18,23 +19,26 @@ class MyFile : IDisposable
         Length = length;
     }
 
+    // Метод Create создает новый файл с заданным именем и длиной, заполняя его пробелами.
     public static MyFile Create(string path, int length, Encoding encoding)
     {
-        var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+        var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
         var writer = new StreamWriter(stream, encoding);
         writer.Write(new string(' ', length));
         writer.Flush();
         return new MyFile(stream, length, encoding);
     }
 
+    // Метод Read открывает существующий файл и возвращает объект класса MyFile, содержащий его содержимое.
     public static MyFile Read(string path, Encoding encoding)
     {
-        var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+        var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
         var reader = new StreamReader(stream, encoding);
         var length = (int)stream.Length;
         return new MyFile(stream, length, encoding);
     }
 
+    // Определение индексатора, который позволяет получать и изменять символы в файле по индексу.
     public char this[int index]
     {
         get
@@ -56,6 +60,7 @@ class MyFile : IDisposable
         }
     }
 
+    // Метод Dispose для освобождения ресурсов.
     public void Dispose()
     {
         writer.Dispose();
