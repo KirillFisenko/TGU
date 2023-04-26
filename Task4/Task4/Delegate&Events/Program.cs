@@ -1,99 +1,143 @@
 ﻿using System;
 using System.Threading;
 
-namespace Delegates_Events
+namespace CountdownTimer
 {
-    // Определяем делегат для событий таймера
-    public delegate void TimerEventHandler(object sender, TimerEventArgs args);
+    // Объявление делегатов
+    public delegate void CountdownDelegate(string timerName);
 
-    // Определяем класс аргументов для событий таймера
-    public class TimerEventArgs : EventArgs
+    public delegate void TaskDelegate(string taskName, int time);
+
+    // Объявление интерфейса ICutDownNotifier с двумя методами
+    public interface ICutDownNotifier
     {
-        public string TimerName { get; set; } // Имя таймера
-        public int SecondsLeft { get; set; } // Сколько секунд осталось
-        public string EventSource { get; set; } // Источник события
-
-        public TimerEventArgs(string timerName, int secondsLeft, string eventSource)
-        {
-            TimerName = timerName;
-            SecondsLeft = secondsLeft;
-            EventSource = eventSource;
-        }
+        void Init();
+        void Run();
     }
 
-    // Определяем класс для имитации таймера с обратным отсчетом
-    public class CountdownNotifier
+    // Класс Timer, который реализует интерфейс ICutDownNotifier
+    public class Timer : ICutDownNotifier
     {
-        private readonly int _secondsToWait; // Количество секунд ожидания проставляется пользователем
-        private readonly string _timerName; // Имя таймера
+        // Инициализация переменных
+        private int waitTime;
+        private string timerName;
+        public event CountdownDelegate Countdown;
 
-        public CountdownNotifier(int secondsToWait, string timerName)
+        // Конструктор класса
+        public Timer(int time, string name)
         {
-            _secondsToWait = secondsToWait;
-            _timerName = timerName;
+            waitTime = time;
+            timerName = name;
         }
 
-        // Определяем события таймера
-        public event TimerEventHandler CountdownFinished; // Событие "обратный отсчет завершён"
-        public event TimerEventHandler CountdownTick; // Событие "осталось N секунд"
-
-        // Метод инициализации таймера (ожидание)
+        // Реализация метода Init() интерфейса ICutDownNotifier
         public void Init()
         {
-            Console.WriteLine($"Timer '{_timerName}' started."); // Выводим сообщение о начале работы таймера
-            Thread.Sleep(_secondsToWait * 1000); // Имитируем ожидание в течение заданного количества секунд
-            Console.WriteLine($"Timer '{_timerName}' finished."); // Выводим сообщение о завершении работы таймера
-            CountdownFinished?.Invoke(this, new TimerEventArgs(_timerName, 0, "CountdownFinished")); // Вызываем событие "обратный отсчет завершён"
+            Countdown += OnCountdownStart;
+            Countdown += OnCountdownLeft;
+            Countdown += OnCountdownEnd;
         }
 
-        // Метод запуска таймера (обратный отсчет)
+        // Реализация метода Run() интерфейса ICutDownNotifier
         public void Run()
         {
-            Console.WriteLine($"Timer '{_timerName}' started."); // Выводим сообщение о начале работы таймера
-            for (int i = _secondsToWait; i >= 0; i--)
+            Console.WriteLine($"Timer '{timerName}' started for {waitTime} seconds.");
+            Thread.Sleep(waitTime * 1000);
+            Countdown?.Invoke(timerName);
+        }
+
+        // Методы-обработчики событий Countdown
+        private void OnCountdownStart(string name)
+        {
+            Console.WriteLine($"Countdown started for timer '{name}'.");
+        }
+
+        private void OnCountdownLeft(string name)
+        {
+            for (int i = waitTime; i > 0; i--)
             {
-                Thread.Sleep(1000); // Имитируем ожидание в течение одной секунды
-                Console.WriteLine($"Timer '{_timerName}' ticked. {_secondsToWait - i} seconds left."); // Выводим сообщение о количестве оставшихся секунд
-                CountdownTick?.Invoke(this, new TimerEventArgs(_timerName, _secondsToWait - i, "CountdownTick")); // Вызываем событие "осталось N секунд"
+                Thread.Sleep(1000);
+                Console.WriteLine($"{i} seconds left for timer '{name}'.");
             }
-            Console.WriteLine($"Timer '{_timerName}' finished."); // Выводим сообщение о завершении работы таймера
-            CountdownFinished?.Invoke(this, new TimerEventArgs(_timerName, 0, "CountdownFinished")); // Вызываем событие "обратный отсчет завершён"
+        }
+
+        private void OnCountdownEnd(string name)
+        {
+            Console.WriteLine($"Countdown ended for timer '{name}'.");
         }
     }
 
-    // Главный класс: 
-    internal class Program
+    // Класс TaskNotifier, который также реализует интерфейс ICutDownNotifier
+    public class TaskNotifier : ICutDownNotifier
+    {
+        // Инициализация переменных
+        private string taskName;
+        private int taskTime;
+        public event TaskDelegate Started;
+        public event Action<string, int> Finished;
+        private Timer timer;
+
+        // Конструктор класса, в котором еще инициализируется экземпляр класса Timer
+        public TaskNotifier(string name, int time, TaskDelegate start, Action<string, int> finish)
+        {
+            taskName = name;
+            taskTime = time;
+            Started += start;
+            Finished += finish;
+            timer = new Timer(taskTime, name);
+        }
+
+        // Реализация метода Init() интерфейса ICutDownNotifier
+        public void Init()
+        {
+            timer.Init();
+            timer.Countdown += OnTaskCountdown;
+        }
+
+        // Реализация метода Run() интерфейса ICutDownNotifier
+        public void Run()
+        {
+            Started?.Invoke(taskName, taskTime);
+            timer.Run();
+            Finished?.Invoke(taskName, taskTime);
+        }
+
+        // Метод-обработчик события Countdown
+        private void OnTaskCountdown(string name)
+        {
+            Console.WriteLine($"Task '{name}' has {taskTime} seconds left.");
+        }
+    }
+
+    class Program
     {
         static void Main(string[] args)
         {
-            var taskStartedDelegate = new Action<string, int>((taskName, time) =>
-                Console.WriteLine($"Task '{taskName}' started. Time allocated: {time} seconds."));
-            var taskFinishedDelegate = new Action<string, int>((taskName, time) =>
-                Console.WriteLine($"Task '{taskName}' finished. Time spent: {time} seconds."));
+            // Инициализация массива интерфейсов ICutDownNotifier
+            ICutDownNotifier[] notifiers = new ICutDownNotifier[3];
 
-            var notifier1 = new CountdownNotifier(5, "notifier1");
-            notifier1.CountdownFinished += (sender, args) =>
-                taskFinishedDelegate.Invoke(args.TimerName, notifier1._secondsToWait);
-            notifier1.CountdownTick += (sender, args) =>
-                Console.WriteLine($"Seconds left for timer '{args.TimerName}': {args.SecondsLeft}");
+            // Инициализация делегатов
+            CountdownDelegate deleg = new CountdownDelegate((string name) => { Console.WriteLine($"Event received for timer '{name}'."); });
+            TaskDelegate started = new TaskDelegate((string name, int time) => { Console.WriteLine($"Task '{name}' started."); });
+            Action<string, int> finished = new Action<string, int>((string name, int time) => { Console.WriteLine($"Task '{name}' finished after {time} seconds."); });
 
-            var notifier2 = new CountdownNotifier(10, "notifier2");
-            notifier2.CountdownFinished += (sender, args) =>
-                taskFinishedDelegate.Invoke(args.TimerName, notifier2._secondsToWait);
-            notifier2.CountdownTick += (sender, args) =>
-                Console.WriteLine($"Seconds left for timer '{args.TimerName}': {args.SecondsLeft}");
+            // Инициализация трех элементов массива интерфейсов, два Таймера и одного TaskNotifier
+            notifiers[0] = new Timer(5, "Чтение задания");
+            notifiers[0].Init();
 
-            var notifier3 = new CountdownNotifier(15, "notifier3");
-            notifier3.CountdownFinished += (sender, args) =>
-                taskFinishedDelegate.Invoke(args.TimerName, notifier3._secondsToWait);
-            notifier3.CountdownTick += (sender, args) =>
-                Console.WriteLine($"Seconds left for timer '{args.TimerName}': {args.SecondsLeft}");
+            notifiers[1] = new TaskNotifier("Выполнение задания", 10, started, finished);
+            notifiers[1].Init();
 
-            notifier1.Init();
-            notifier2.Run();
-            notifier3.Run();
+            notifiers[2] = new Timer(3, "Проверка задания перед отправкой");
+            notifiers[2].Init();
 
-            Console.ReadKey();
+            // Запуск всех элементов массива интерфейсов ICutDownNotifier
+            foreach (var notifier in notifiers)
+            {
+                notifier.Run();
+            }
+
+            Console.ReadLine();
         }
     }
 }
