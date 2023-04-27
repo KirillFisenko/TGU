@@ -8,7 +8,7 @@ namespace CountdownTimer
 
     public delegate void TaskDelegate(string taskName, int time);
 
-    // Объявление интерфейса ICutDownNotifier с двумя методами
+    // Объявление интерфейса ICutDownNotifier
     public interface ICutDownNotifier
     {
         void Init();
@@ -18,7 +18,7 @@ namespace CountdownTimer
     // Класс Timer, который реализует интерфейс ICutDownNotifier
     public class Timer : ICutDownNotifier
     {
-        // Инициализация переменных
+        // Поля
         private int waitTime;
         private string timerName;
         public event CountdownDelegate Countdown;
@@ -41,7 +41,7 @@ namespace CountdownTimer
         // Реализация метода Run() интерфейса ICutDownNotifier
         public void Run()
         {
-            Console.WriteLine($"Timer '{timerName}' started for {waitTime} seconds.");
+            Console.WriteLine($"Таймер '{timerName}' запущен на {waitTime} сек.");
             Thread.Sleep(waitTime * 1000);
             Countdown?.Invoke(timerName);
         }
@@ -49,7 +49,7 @@ namespace CountdownTimer
         // Методы-обработчики событий Countdown
         private void OnCountdownStart(string name)
         {
-            Console.WriteLine($"Countdown started for timer '{name}'.");
+            Console.WriteLine($"Начался обратный отсчет '{name}'.");
         }
 
         private void OnCountdownLeft(string name)
@@ -57,20 +57,21 @@ namespace CountdownTimer
             for (int i = waitTime; i > 0; i--)
             {
                 Thread.Sleep(1000);
-                Console.WriteLine($"{i} seconds left for timer '{name}'.");
+                Console.WriteLine($"{i} сек. осталось на '{name}'.");
             }
         }
 
         private void OnCountdownEnd(string name)
+
         {
-            Console.WriteLine($"Countdown ended for timer '{name}'.");
+            Console.WriteLine($"Обратный отсчет '{name}' закончился.");
         }
     }
 
     // Класс TaskNotifier, который также реализует интерфейс ICutDownNotifier
     public class TaskNotifier : ICutDownNotifier
     {
-        // Инициализация переменных
+        // Поля
         private string taskName;
         private int taskTime;
         public event TaskDelegate Started;
@@ -105,7 +106,7 @@ namespace CountdownTimer
         // Метод-обработчик события Countdown
         private void OnTaskCountdown(string name)
         {
-            Console.WriteLine($"Task '{name}' has {taskTime} seconds left.");
+            Console.WriteLine($"У задачи '{name}' осталось {taskTime} сек.");
         }
     }
 
@@ -117,24 +118,25 @@ namespace CountdownTimer
             ICutDownNotifier[] notifiers = new ICutDownNotifier[3];
 
             // Инициализация делегатов
-            CountdownDelegate deleg = new CountdownDelegate((string name) => { Console.WriteLine($"Event received for timer '{name}'."); });
-            TaskDelegate started = new TaskDelegate((string name, int time) => { Console.WriteLine($"Task '{name}' started."); });
-            Action<string, int> finished = new Action<string, int>((string name, int time) => { Console.WriteLine($"Task '{name}' finished after {time} seconds."); });
+            CountdownDelegate deleg = new CountdownDelegate((string name) => { Console.WriteLine($"Событие, полученное для таймера '{name}'."); });
+            TaskDelegate started = new TaskDelegate((string name, int time) => { Console.WriteLine($"Задача '{name}' начата."); });
+            Action<string, int> finished = new Action<string, int>((string name, int time) => { Console.WriteLine($"Задача '{name}' закончена после {time} сек."); });
 
-            // Инициализация трех элементов массива интерфейсов, два Таймера и одного TaskNotifier
+            // Инициализация трех элементов массива интерфейсов
             notifiers[0] = new Timer(5, "Чтение задания");
-            notifiers[0].Init();
+            notifiers[0].Init();            
 
             notifiers[1] = new TaskNotifier("Выполнение задания", 10, started, finished);
-            notifiers[1].Init();
+            notifiers[1].Init();            
 
             notifiers[2] = new Timer(3, "Проверка задания перед отправкой");
-            notifiers[2].Init();
+            notifiers[2].Init();            
 
             // Запуск всех элементов массива интерфейсов ICutDownNotifier
             foreach (var notifier in notifiers)
             {
                 notifier.Run();
+                Console.WriteLine();
             }
 
             Console.ReadLine();
