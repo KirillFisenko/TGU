@@ -20,7 +20,6 @@ namespace LINQ
         }
 
         // поиск всех положительных элементов в массиве в виде метода, реализующего поиск напрямую
-
         public static int[] FindPositiveNumbers(this int[] numbers)
         {
             int count = 0;
