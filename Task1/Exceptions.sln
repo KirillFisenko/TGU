@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "try_catch_finally", "try_catch_finally\try_catch_finally.csproj", "{6E2DCE35-0771-411E-A081-079854FA71C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exceptions", "try_catch_finally\Exceptions.csproj", "{6E2DCE35-0771-411E-A081-079854FA71C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
