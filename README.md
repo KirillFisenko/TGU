@@ -1,4 +1,4 @@
-# TGU
+# TGU lessons
 Задания по курсу "Программирование на .Net" Тольяттинского государственного университета
 
 - [Task 1](https://github.com/KirillFisenko/TGU/tree/master/Task1/try_catch_finally) Обработка исключений
