@@ -67,6 +67,7 @@
 
 ![image](https://github.com/KirillFisenko/TGU/assets/120630673/e9211685-86b7-4461-b633-111418b32fc4)
 
+---
 
 **Тема 4. Делегаты и события**
 
